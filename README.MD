@@ -1,9 +1,9 @@
 ### CSE112
 ## Computer Organization
-# Group Project
+## Group Project
 
-# Group Member Details:
-Devaj Rathore
-Kavya 
-Dviyanshi Beniwal
-Animish Yadav
+## Group Member Details:
+#Devaj Rathore
+#Kavya 
+#Dviyanshi Beniwal
+#Animish Yadav
