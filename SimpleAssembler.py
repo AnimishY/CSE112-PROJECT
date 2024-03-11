@@ -378,7 +378,7 @@ def assemble2(input_file, output_file, binary_code):
 
         elif asmcmd_type == 'J':
             t = imm(command_list[2], 20)
-            bin = t[10:0:-1] + t[11] + t[19:11:-1] + find_reg(command_list[1]) + opcode
+            bin = t[10:-1:-1] + t[11] + t[19:11:-1] + find_reg(command_list[1]) + opcode
             binary_code.append(bin)
 
 def assemble(assembly_file, binary_file):
@@ -395,4 +395,3 @@ def assemble(assembly_file, binary_file):
         
 # Test the assembler
 assemble('assembly_code.txt', 'binary.txt')
-
