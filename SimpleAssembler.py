@@ -369,7 +369,7 @@ def assemble2(input_file, output_file, binary_code):
 
         elif asmcmd_type == 'B':
             t = imm(command_list[3], 10)
-            bin = '00' + t[4:12] + find_reg(command_list[2]) + find_reg(command_list[1]) + find_fn3(asmcmd) + t[0:4] + opcode
+            bin = '0' + t[4:12] + find_reg(command_list[2]) + find_reg(command_list[1]) + find_fn3(asmcmd) + t[0:4] + opcode
             binary_code.append(bin)
 
         elif asmcmd_type == 'U':
