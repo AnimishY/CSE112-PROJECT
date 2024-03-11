@@ -193,6 +193,30 @@ def imm(n, num_bits):
         binary_repr = bin(n)[2:].zfill(num_bits)
 
     return binary_repr
+
+def halterror(halt, l1):
+    count=0
+    for i in range(len(1)):
+        if l1[i]==halt:
+            count+=1
+        if count>1:
+            file=open('binary.txt','w')
+            file.write("error: More than one virtual halt")
+            file.close()
+            return True
+        if count==1:
+            if l1[len(l1)]!=halt:
+                file=open('binary.txt','w')
+                file.write("error: Halt not last instruction")
+                file.close()
+                return True
+        if count==0:
+            file=open('binary.txt','w')
+            file.write("error: No virtual halt found")
+            file.close()
+            return True
+    return False
+        
     
 def error_check(list):
     "incomplete"
