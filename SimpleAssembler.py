@@ -1,3 +1,5 @@
+import re
+import sys
 # dictionary with assembly command : [opode, opcode type, func 3, func 7]
 # if invalid then "inv"
 opcode = {
@@ -185,6 +187,7 @@ def find_fn3(asmcmd):
             return opcude_list[asmcmd[2]]
         
 def imm(n, num_bits):
+    n = int(n)
     if n < 0:
        
         binary_repr = bin(n & ((1 << num_bits) - 1))[2:]
@@ -192,7 +195,7 @@ def imm(n, num_bits):
         
         binary_repr = bin(n)[2:].zfill(num_bits)
 
-    return binary_repr
+    return str(binary_repr)
 
 def halterror(halt, l1):
     count=0
@@ -256,13 +259,44 @@ def assemble(input_file, output_file):
             binary_code.append(bin)
         
         elif asmcmd_type == 'I':
-            bin = imm(command_list[1], 12) + find_reg(command_list[2]) + find_fn3(asmcmd) + find_reg(command_list[1]) + opcode
-            binary_code.append(bin)
+            n = ''
+            x=''
+            if command_list[0] == 'lw':
+                for i in command_list[2]:
+                    if i!='(':
+                        n+=i
+                    else:
+                        break
+                pattern = r'\[(.*?)\]' 
+                x = re.findall(pattern, command_list[0])
+                bin = imm(n, 12) + find_reg(x) + find_fn3(asmcmd) + find_reg(command_list[1]) + opcode
+                binary_code.append(bin)
+            else:
+                bin = imm(command_list[3], 12) + find_reg(command_list[2]) + find_fn3(asmcmd) + find_reg(command_list[1]) + opcode
+                binary_code.append(bin)
 
         elif asmcmd_type == 'S':
-            b
+            n = ''
+            x=''
+            t = imm(n, 12)
+            if command_list[0] == 'lw':
+                for i in command_list[2]:
+                    if i!='(':
+                        n+=i
+                    else:
+                        break
+                pattern = r'\[(.*?)\]' 
+                x = re.findall(pattern, command_list[0])
+            bin = t[0:8] + find_reg(command_list[1]) +  find_reg(x) + find_fn3(asmcmd) + t[8:13] + opcode
+            binary_code.append(bin)
+
+        elif asmcmd_type == 'B':
+            t = imm(command_list[3], 10)
+            bin = '00' + t[0:7] + find_reg(command_list[2]) + find_reg(command_list[1]) + find_fn3(asmcmd) + t[7:11] + opcode
+            binary_code.append(bin)
+
+        elif asmcmd_type == 'U':
+            
         
 # Test the assembler
 assemble('assembly_code.txt', 'binary_code.txt')
-
-
