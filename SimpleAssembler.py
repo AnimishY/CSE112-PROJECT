@@ -1,5 +1,4 @@
 import re
-import sys
 # dictionary with assembly command : [opode, opcode type, func 3, func 7]
 # if invalid then "inv"
 opcode = {
@@ -102,8 +101,44 @@ def find_opcode(asmcmd):
 }
 
     if asmcmd in opcude_list:
-        return opcude_list[asmcmd[0]]
-    
+        return opcude_list[asmcmd][0]
+
+# function to find opcode info
+def find_info(asmcmd):
+    opcude_list = {
+    'add': ['0110011', 'R', '000', '0000000'],
+    'sub': ['0110011', 'R', '000', '0100000'],
+    'sll': ['0110011', 'R', '001', '0000000'],
+    'slt': ['0110011', 'R', '010', '0000000'],
+    'sltu': ['0110011', 'R', '011', '0000000'],
+    'xor': ['0110011', 'R', '100', '0000000'],
+    'srl': ['0110011', 'R', '101', '0000000'],
+    'or': ['0110011', 'R', '110', '0000000'],
+    'and': ['0110011', 'R', '111', '0000000'],
+    'lw': ['0000011', 'I', '010', 'inv'],
+    'addi': ['0010011', 'I', '000', 'inv'],
+    'sltiu': ['0010011', 'I', '011', 'inv'],
+    'jalr': ['1100111', 'I', '000', 'inv'],
+    'sw': ['0100011', 'S', '010', 'inv'],
+    'beq': ['1100011', 'B', '000', 'inv'],
+    'bne': ['1100011', 'B', '001', 'inv'],
+    'blt': ['1100011', 'B', '100', 'inv'],
+    'bge': ['1100011', 'B', '101', 'inv'],
+    'bltu': ['1100011', 'B', '110', 'inv'],
+    'bgeu': ['1100011', 'B', '111', 'inv'],
+    'lui': ['0110111', 'U', 'inv', 'inv'],
+    'auipc': ['0010111', 'U', 'inv', 'inv'],
+    'jal': ['1101111', 'J', 'inv', 'inv'],
+    'hlt': ['1111111', 'C', 'inv', 'inv'],
+    'mul': ['0000000', 'C', 'inv', 'inv'],
+    'rst': ['0000001', 'C', 'inv', 'inv'],
+    'rvrs': ['0000010', 'C', 'inv', 'inv']
+}
+
+    if asmcmd in opcude_list:
+        return opcude_list[asmcmd]
+
+#function to find register using AIB    
 def find_reg(reg):
     registers = {
         'zero': '00000', # hard wired to 0
@@ -142,7 +177,8 @@ def find_reg(reg):
     }
     if reg in registers:
         return registers[reg]
-    
+
+#function to find function 7   
 def find_fn7(asmcmd):
     opcude_list = {
     'add': ['0110011', 'R', '000', '0000000'],
@@ -157,8 +193,9 @@ def find_fn7(asmcmd):
 }
 
     if asmcmd in opcude_list:
-        return opcude_list[asmcmd[3]]
-    
+        return opcude_list[asmcmd][3]
+
+#function to find function 3    
 def find_fn3(asmcmd):
         opcude_list = {
         'add': ['0110011', 'R', '000', '0000000'],
@@ -184,8 +221,9 @@ def find_fn3(asmcmd):
         }
     
         if asmcmd in opcude_list:
-            return opcude_list[asmcmd[2]]
-        
+            return opcude_list[asmcmd][2]
+
+#function to calculate binary 2's complement string from decimal string     
 def imm(n, num_bits):
     n = int(n)
     if n < 0:
@@ -197,51 +235,55 @@ def imm(n, num_bits):
 
     return str(binary_repr)
 
+#function to throw error in case of incorrect use of halt
 def halterror(halt, l1):
     count=0
-    for i in range(len(1)):
+    for i in range(len(l1)):
         if l1[i]==halt:
             count+=1
-        if count>1:
+    if count>1:
+        file=open('binary.txt','w')
+        file.write("error: More than one virtual halt")
+        file.close()
+        return True
+    elif count==1:
+        if l1[len(l1)-1]!=halt:
             file=open('binary.txt','w')
-            file.write("error: More than one virtual halt")
+            file.write("error: Halt not last instruction")
             file.close()
             return True
-        if count==1:
-            if l1[len(l1)]!=halt:
-                file=open('binary.txt','w')
-                file.write("error: Halt not last instruction")
-                file.close()
-                return True
-        if count==0:
-            file=open('binary.txt','w')
-            file.write("error: No virtual halt found")
-            file.close()
-            return True
+    elif count==0:
+        file=open('binary.txt','w')
+        file.write("error: No virtual halt found")
+        file.close()
+        return True
     return False
         
     
 def error_check(list):
     "incomplete"
 
-def assemble(input_file, output_file):
+def assemble2(input_file, output_file, binary_code):
     with open(input_file, 'r') as file:
         assembly_code = file.readlines()
-
-    binary_code = []
 
     for line_number, line in enumerate(assembly_code, start=1):
         line = line.strip()
         
+        if ":" in line:
+            binary_code.append(line[0 : line.index(':')+2])
+            line = line[line.index(':')+2 :]
+
         #add r1,r2,r3
         command_list = []
         asmcmd, operands = line.split()
-        operands = operands.split(',')
+        operands = operands.split(",")
+        operands = [i.replace(" ", "") for i in operands]
         command_list.append(asmcmd)
         command_list.extend(operands)
-        error_check(command_list)
+        #error_check(command_list)
         
-        asmcmd_info = find_opcode(asmcmd) # check for valid opcode
+        asmcmd_info = find_info(asmcmd) # check for valid opcode
         if asmcmd_info is None:
             error_message = f"Invalid opcode '{asmcmd}' at line {line_number}"
             with open(output_file, 'w') as file:
@@ -252,11 +294,20 @@ def assemble(input_file, output_file):
 
         opcode = asmcmd_info[0]
         asmcmd_type = asmcmd_info[1]
-
-        #add r1, r2 ,r3
+        
         if asmcmd_type == 'R':
             bin = find_fn7(asmcmd) + find_reg(command_list[3]) + find_reg(command_list[2]) + find_fn3(asmcmd) + find_reg(command_list[1]) + opcode
             binary_code.append(bin)
+
+        elif line == "beq zero,zero,0x00000000":
+            bin = t = imm(command_list[3], 10)
+            bin = '00000000' + find_reg(command_list[2]) + find_reg(command_list[1]) + find_fn3(asmcmd) + '0000' + opcode
+            binary_code.append(bin)
+            return
+        
+        elif asmcmd == 'halt':
+            binary_code.append('000000000000000000' + find_fn3('beq') + '0000' + opcode)
+            return
         
         elif asmcmd_type == 'I':
             n = ''
@@ -296,7 +347,26 @@ def assemble(input_file, output_file):
             binary_code.append(bin)
 
         elif asmcmd_type == 'U':
-            
+            bin = imm(command_list[2], 20) + find_reg(command_list[1]) + opcode
+            binary_code.append(bin)
+
+        elif asmcmd_type == 'U':
+            t = imm(command_list[2], 20)
+            bin = t[10:0:-1] + t[11] + t[19:11:-1] + find_reg(command_list[1]) + opcode
+            binary_code.append(bin)
+    print(binary_code)
+
+def assemble(assembly_file, binary_file):
+    binary_code = []
+    assemble2('assembly_code.txt', 'binary.txt', binary_code)
+    if halterror('00000000000000000000000001100011', binary_code) == True:
+            return
+    with open('binary.txt', 'w') as file:
+        for code in binary_code:
+            if ':' in code:
+                file.write(code)
+            else:
+                file.write(code + '\n')
         
 # Test the assembler
-assemble('assembly_code.txt', 'binary_code.txt')
+assemble('assembly_code.txt', 'binary.txt')
