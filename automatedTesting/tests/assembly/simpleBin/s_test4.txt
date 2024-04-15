@@ -1,0 +1,14 @@
+add s0,zero,zero
+addi s1,zero,-7
+lui s0,65536
+sw s1,0(s0)
+addi s1,s1,1
+addi s0,s0,4
+sw s1,0(s0)
+auipc s0,65536
+addi s1,s1,1
+sw s1,0(s0)
+addi s0,s0,4
+addi s1,s1,1
+sw s1,0(s0)
+beq zero,zero,0
