@@ -1,0 +1,11 @@
+xor s0,s1,s2
+addi s3,s4,-50
+blt s5,s6,16
+auipc t0,-64
+jal t1,32
+srl t2,t3,t4
+sw t5,-20(s0)
+sltiu t6,a0,5
+sub t1,t3,tp
+lw s0,48(gp)
+beq zero,zero,0

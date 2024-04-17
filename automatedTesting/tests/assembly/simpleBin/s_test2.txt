@@ -1,0 +1,13 @@
+add s0,zero,zero
+addi s1,zero,1
+add s2,zero,zero
+addi s3,zero,6
+loop_again:jal ra,fibo_func
+add s0,s1,zero
+add s1,s2,zero
+addi s3,s3,-1
+bne s3,zero,loop_again
+beq zero,zero,0
+fibo_func:add s2,s0,s1
+jalr zero,ra,0
+beq zero,zero,0

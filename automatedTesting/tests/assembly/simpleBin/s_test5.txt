@@ -1,0 +1,17 @@
+addi s0,zero,3
+addi s1,zero,-4
+lui s2,65536
+slt s3,s0,s1
+addi s3,s3,10
+sw s3,0(s2)
+addi s2,s2,4
+addi t0,zero,1
+addi s0,zero,-6
+add s0,s0,t0
+slt s3,s0,s1
+sw s3,0(s2)
+bne s3,zero,to_finish
+jal ra,-16
+to_finish:blt s0,s1,finish
+addi s3,s3,5
+finish:beq zero,zero,0

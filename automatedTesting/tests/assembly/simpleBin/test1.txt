@@ -1,0 +1,10 @@
+add ra,t0,gp
+sub t1,s0,a0
+sll a1,t2,t3
+slt s1,a2,s2
+sltu s3,a3,s4
+xor s5,a4,s6
+srl s7,a5,s8
+or s9,a6,s10
+and s11,a7,s0
+beq zero,zero,0

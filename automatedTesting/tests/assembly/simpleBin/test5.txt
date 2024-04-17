@@ -1,0 +1,13 @@
+slt t4,t1,t0
+lui t0,-100
+addi s0,gp,100
+sltiu s1,s0,200
+sltiu s2,a1,-50
+addi s3,sp,-25
+addi s4,a3,75
+sltu t5,t3,a4
+bltu a1,a7,32
+sll s7,t0,t1
+srl s1,t6,t4
+or s9,s10,t6
+beq zero,zero,0
